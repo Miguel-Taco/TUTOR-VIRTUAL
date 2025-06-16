@@ -1,0 +1,11 @@
+{
+  "name": "tutor-virtual",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"cd plataforma-web && npm start\" \"cd tutor-api && node index.js\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
