@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
+import { login } from '../services/authService';
 
 const Login = () => {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
+  const [mensaje, setMensaje] = useState('');
 
-  const manejarSubmit = (e) => {
+  const manejarSubmit = async (e) => {
     e.preventDefault();
-    console.log('Correo:', correo);
-    console.log('Contraseña:', contrasena);
-    // Aquí luego puedes llamar a login() del backend
+    try {
+      const respuesta = await login(correo, contrasena);
+      console.log('✅', respuesta);
+      setMensaje('Inicio de sesión exitoso');
+      // Aquí podrías redirigir a otra página con useNavigate si quieres
+    } catch (error) {
+      console.error('❌', error);
+      setMensaje(error);
+    }
   };
 
   return (
@@ -45,6 +53,8 @@ const Login = () => {
             Iniciar Sesión
           </button>
         </form>
+
+        {mensaje && <p style={{ marginTop: '1rem', color: '#fff' }}>{mensaje}</p>}
       </div>
     </div>
   );
