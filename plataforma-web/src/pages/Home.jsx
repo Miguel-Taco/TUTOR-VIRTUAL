@@ -1,3 +1,6 @@
+//  RNF03 actualizado: el chatbot debe responder en menos de 1 segundo (antes: 3s)
+// Este cambio fue gestionado en la rama "feature/optimizacion-rendimiento-chatbot"
+
 import React, { useState, useRef, useEffect } from "react";
 import { resolverProblema } from "../services/api";
 //import "./Home.css"; // Para estilos adicionales si los usas
