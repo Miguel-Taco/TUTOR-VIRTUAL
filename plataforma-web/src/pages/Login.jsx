@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import { login } from '../services/authService';
 
 const Login = () => {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate(); 
 
   const manejarSubmit = async (e) => {
     e.preventDefault();
@@ -12,7 +14,7 @@ const Login = () => {
       const respuesta = await login(correo, contrasena);
       console.log('✅', respuesta);
       setMensaje('Inicio de sesión exitoso');
-      // Aquí podrías redirigir a otra página con useNavigate si quieres
+      navigate('/home'); // Redirige a la página de inicio después del login exitoso
     } catch (error) {
       console.error('❌', error);
       setMensaje(error);
