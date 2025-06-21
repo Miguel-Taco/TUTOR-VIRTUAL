@@ -1,16 +1,20 @@
-import axios from "axios";
 
-const API_URL = "http://localhost:3001"; // Asegúrate que coincida con tu backend
+const API_URL = "http://localhost:3001/api";
 
 export const resolverProblema = async (problema, tema) => {
     try {
-        const res = await axios.post(`${API_URL}/resolver`, {
-        problema,
-        tema,
+        const response = await fetch(`${API_URL}/resolver`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ problema, tema }),
         });
-        return res.data;
+
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error("Error al resolver problema:", error);
-        return { error: "No se pudo resolver el problema" };
+        return null;
     }
 };
