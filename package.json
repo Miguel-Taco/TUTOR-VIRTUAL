@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "concurrently \"cd plataforma-web && npm start\" \"cd tutor-api && node index.js\""
+    "start": "concurrently \"npm run start --prefix plataforma-web\" \"npm run server --prefix tutor-api\""
   },
-  "dependencies": {
-    "concurrently": "^8.2.2"
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
