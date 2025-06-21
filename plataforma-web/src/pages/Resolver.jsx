@@ -90,7 +90,7 @@ function Resolver() {
                     }}
                     >
                     {msg.autor === "bot" && <span style={styles.iconoBot}>🤖</span>}
-                    <span>{msg.texto}</span>
+                    <span style={{ whiteSpace: "pre-line" }}>{msg.texto}</span>
                     </div>
                 ))
                 )}

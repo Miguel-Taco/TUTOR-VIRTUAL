@@ -11,7 +11,7 @@ const authRoutes = require('./routes/auth');
 app.use('/api', authRoutes);
 
 const resolverRoutes = require('./routes/resolver');
-app.use('/resolver', resolverRoutes);
+app.use('/api', resolverRoutes);
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3001;
