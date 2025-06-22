@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { resolverProblema } from "../services/api";
-//import "./Home.css"; // Para estilos adicionales si los usas
 
 function Resolver() {
     const [problema, setProblema] = useState("");

@@ -4,12 +4,12 @@ import Resolver from './pages/Resolver';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/resolver" element={<Resolver />} />
-      </Routes>
-    </Router>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/resolver" element={<Resolver />} />
+        </Routes>
+      </Router>
   );
 }
 
