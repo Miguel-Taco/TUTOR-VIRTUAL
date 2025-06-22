@@ -14,7 +14,7 @@ const Login = () => {
       const respuesta = await login(correo, contrasena);
       console.log('✅', respuesta);
       setMensaje('Inicio de sesión exitoso');
-      navigate('/home'); // Redirige a la página de inicio después del login exitoso
+      navigate('/resolver'); // Redirige a la página de inicio después del login exitoso
     } catch (error) {
       console.error('❌', error);
       setMensaje(error);

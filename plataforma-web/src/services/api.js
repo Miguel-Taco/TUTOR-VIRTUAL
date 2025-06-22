@@ -1,16 +1,16 @@
-import axios from "axios";
+import axios from 'axios';
 
-const API_URL = "http://localhost:3001"; // Asegúrate que coincida con tu backend
+const API_URL = 'http://localhost:3001/api';
 
 export const resolverProblema = async (problema, tema) => {
     try {
-        const res = await axios.post(`${API_URL}/resolver`, {
+        const response = await axios.post(`${API_URL}/resolver`, {
         problema,
         tema,
         });
-        return res.data;
+        return response.data;
     } catch (error) {
-        console.error("Error al resolver problema:", error);
-        return { error: "No se pudo resolver el problema" };
+        console.error('❌ Error al resolver problema:', error);
+        return null;
     }
 };
