@@ -4,7 +4,8 @@ const db = require('../db/db');
 
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await db.query(`
+    const cod_usuario = req.query.cod_usuario;
+    let query = `
       SELECT 
         h.cod_historial,
         h.problema,
@@ -18,8 +19,14 @@ router.get('/', async (req, res) => {
       LEFT JOIN IR_TEMA t ON h.cod_tema = t.cod_tema
       LEFT JOIN IR_TIPO_ENTRADA te ON h.cod_tipo_entrada = te.cod_tipo_entrada
       LEFT JOIN IR_USUARIO u ON h.cod_usuario = u.cod_usuario
-      ORDER BY h.fecha DESC
-    `);
+    `;
+    const params = [];
+    if (cod_usuario) {
+      query += " WHERE h.cod_usuario = ?";
+      params.push(cod_usuario);
+    }
+    query += " ORDER BY h.fecha DESC";
+    const [rows] = await db.query(query, params);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener el historial' });
