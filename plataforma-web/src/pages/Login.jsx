@@ -13,6 +13,9 @@ const Login = () => {
     try {
       const respuesta = await login(correo, contrasena);
       console.log('✅', respuesta);
+
+      localStorage.setItem('usuarioId', respuesta.usuario.cod_usuario);// Guarda el cod_usuario
+      
       setMensaje('Inicio de sesión exitoso');
       navigate('/home'); // Redirige a home después del login
     } catch (error) {
