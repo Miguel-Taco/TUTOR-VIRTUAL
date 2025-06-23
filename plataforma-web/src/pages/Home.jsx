@@ -21,7 +21,7 @@ function Home() {
             </p>
 
             <div style={styles.buttonsContainer}>
-            <button style={styles.primaryButton} onClick={() => navigate("/resolver")}>Historial de chats</button>
+            <button style={styles.primaryButton} onClick={() => navigate("/historial")}>Historial de chats</button>
             <button style={styles.secondaryButton} onClick={() => navigate("/resolver")}>Chatear con Tutor</button>
             </div>
         </main>
