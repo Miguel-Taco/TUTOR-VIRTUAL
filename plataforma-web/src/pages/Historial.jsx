@@ -26,6 +26,19 @@ function Historial() {
         return tipo || "";
     }
 
+    function temaBadgeStyle(tema) {
+    switch (tema) {
+        case "Cálculo":
+            return { background: "#ede9fe", color: "#7c3aed" };
+        case "Álgebra":
+            return { background: "#dbeafe", color: "#2563eb" };
+        case "Geometría":
+            return { background: "#d1fae5", color: "#059669" };
+        default:
+            return { background: "#e5e7eb", color: "#333" };
+    }
+}
+
     return (
         <div style={styles.page}>
             <header style={styles.header}>
@@ -34,7 +47,6 @@ function Historial() {
             </header>
             <div style={styles.container}>
                 <div style={styles.mainBox}>
-                    {/* Panel izquierdo: lista de problemas */}
                     <div style={styles.inputBox}>
                         <h3 style={{ marginTop: 0, textAlign: "left", width: "100%" }}>Mis Consultas</h3>
                         <ul style={styles.chatList}>
@@ -53,6 +65,16 @@ function Historial() {
                                         <div style={styles.problemaTitulo}>
                                             {item.problema}
                                         </div>
+                                        {item.tema && (
+                                            <div
+                                                style={{
+                                                    ...styles.temaBadge,
+                                                    ...temaBadgeStyle(item.tema)
+                                                }}
+                                            >
+                                                {item.tema}
+                                            </div>
+                                        )}
                                         <div style={{ fontSize: "0.98em", color: "#888", marginTop: 4, textAlign: "left" }}>
                                             <span>{tipoIngresoTexto(item.tipo_entrada)}</span>
                                             <br />
@@ -63,7 +85,6 @@ function Historial() {
                             )}
                         </ul>
                     </div>
-                    {/* Panel derecho: detalle del problema seleccionado */}
                     <div style={styles.outputBox}>
                         {!selected ? (
                             <div>
@@ -130,7 +151,7 @@ const styles = {
         border: "1px solid #ccc",
         borderRadius: "8px",
         width: "380px",
-        alignItems: "stretch", // <-- Cambiado aquí
+        alignItems: "stretch",
         gap: "1rem",
         background: "#f5f5fa",
         minHeight: "400px",
@@ -146,14 +167,14 @@ const styles = {
         width: "100%",
     },
     chatItem: {
-        padding: "0.7rem 1rem", // igual a ambos lados
+        padding: "0.7rem 1rem",
         borderRadius: "6px",
         cursor: "pointer",
         marginBottom: "0.5rem",
         transition: "background 0.2s",
         width: "100%",
         textAlign: "left",
-        boxSizing: "border-box", // asegura que el padding no desborde
+        boxSizing: "border-box",
     },
     problemaTitulo: {
         fontWeight: "bold",
@@ -161,6 +182,16 @@ const styles = {
         textAlign: "left",
         wordBreak: "break-word",
         whiteSpace: "normal",
+    },
+    temaBadge: {
+        display: "inline-block",
+        padding: "0.18rem 0.8rem",
+        borderRadius: "8px",
+        fontSize: "0.92em",
+        fontWeight: 600,
+        margin: "6px 0 2px 0",
+        letterSpacing: "0.5px",
+        border: "none"
     },
     outputBox: {
         width: "400px",
