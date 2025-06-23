@@ -37,11 +37,6 @@ function Historial() {
                     {/* Panel izquierdo: lista de problemas */}
                     <div style={styles.inputBox}>
                         <h3 style={{ marginTop: 0, textAlign: "left", width: "100%" }}>Mis Consultas</h3>
-                        {error && (
-                            <div style={{ color: "#ef4444", fontWeight: "bold", textAlign: "left" }}>
-                                Error: {error}
-                            </div>
-                        )}
                         <ul style={styles.chatList}>
                             {historial.length === 0 && !error ? (
                                 <li style={{ color: "#888", textAlign: "left" }}>No hay conversaciones aún.</li>
