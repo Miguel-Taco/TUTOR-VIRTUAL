@@ -13,6 +13,9 @@ app.use('/api', authRoutes);
 const resolverRoutes = require('./routes/resolver');
 app.use('/api', resolverRoutes);
 
+const historialRouter = require('./routes/historial');
+app.use('/api/historial', historialRouter);
+
 // Iniciar servidor
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
