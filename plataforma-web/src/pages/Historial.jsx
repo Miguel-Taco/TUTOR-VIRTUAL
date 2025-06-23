@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { obtenerHistorial } from "../services/historialService";
 
 function Historial() {
     const [historial, setHistorial] = useState([]);
@@ -6,20 +7,18 @@ function Historial() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("/api/historial")
-            .then((res) => {
-                if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
-                return res.json();
-            })
+        const cod_usuario = localStorage.getItem('usuarioId');
+        obtenerHistorial(cod_usuario)
             .then((data) => {
                 setHistorial(data);
                 setError(null);
             })
             .catch((err) => {
-                setError(err.message);
+                setError(err);
                 setHistorial([]);
             });
     }, []);
+
 
     function tipoIngresoTexto(tipo) {
         if (tipo === "Texto") return "📝 Texto";
