@@ -28,7 +28,7 @@ async function obtenerSolucionPasoAPaso(problema, tema) {
         const texto = await response.text();
         return texto;
     } catch (error) {
-        console.error("❌ Error al generar con Gemini:", error);
+        console.error("❌ Error al generar respuesta del Chatbot:", error);
         return null;
     }
 }
