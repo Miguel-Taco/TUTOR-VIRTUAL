@@ -17,7 +17,10 @@ async function obtenerSolucionPasoAPaso(problema, tema) {
     RESPUESTA: (respuesta final)
 
     Problema:
-    "${problema}"`;
+    "${problema}"
+    Responde con texto plano. No uses ningún tipo de marcado como **negritas**, _cursivas_ ni listas con guiones. Evita cualquier estilo Markdown.
+    No incluyas explicaciones adicionales, solo sigue el formato indicado.
+    `;
 
     try {
         const result = await model.generateContent({

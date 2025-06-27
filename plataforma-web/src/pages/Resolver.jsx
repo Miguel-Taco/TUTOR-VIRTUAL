@@ -66,6 +66,7 @@ function Resolver() {
                     <option value="Álgebra">Álgebra</option>
                     <option value="Cálculo">Cálculo</option>
                     <option value="Geometría">Geometría</option>
+                    <option value="Trigonometría">Trigonometría</option>
                 </select>
                 </div>
                 <button onClick={handleResolver} style={styles.button}>

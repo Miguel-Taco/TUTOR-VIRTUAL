@@ -17,9 +17,7 @@ function Home() {
         <main style={styles.main}>
             <h1 style={styles.title}>Resuelve problemas matemáticos paso a paso</h1>
             <p style={styles.subtitle}>
-            Interpreta problemas escritos o imágenes, obtén soluciones detalladas con fórmulas en LaTeX y aprende con nuestro chatbot interactivo.
-            </p>
-
+            Interpreta problemas matemáticos escritos o en imágenes y obtén soluciones detalladas en álgebra, cálculo, geometría y más, con la ayuda de nuestro chatbot interactivo.            </p>
             <div style={styles.buttonsContainer}>
             <button style={styles.primaryButton} onClick={() => navigate("/historial")}>Historial de chats</button>
             <button style={styles.secondaryButton} onClick={() => navigate("/resolver")}>Chatear con Tutor</button>
