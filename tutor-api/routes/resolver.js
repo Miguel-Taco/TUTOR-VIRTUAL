@@ -1,20 +1,39 @@
 const express = require('express');
 const router = express.Router();
 const { obtenerSolucionPasoAPaso } = require('../services/mathService');
+const db = require('../db/db');
 
 router.post('/resolver', async (req, res) => {
-    const { problema, tema } = req.body;
-    console.log("📩 Recibido:", problema, "Tema:", tema);
+    const { problema, tema, cod_usuario, tipo_entrada = 'Texto' } = req.body;
+
+    console.log('📩 Recibido:', problema, 'Tema:', tema, 'Usuario:', cod_usuario);
+
     try {
         const solucion = await obtenerSolucionPasoAPaso(problema, tema);
-        if (solucion) {
+
+        // Obtener IDs relacionados
+        const [temaResult] = await db.execute(
+        'SELECT cod_tema FROM IR_TEMA WHERE nombre = ? LIMIT 1',
+        [tema]
+        );
+        const cod_tema = temaResult[0]?.cod_tema || null;
+
+        const [tipoEntradaResult] = await db.execute(
+        'SELECT cod_tipo_entrada FROM IR_TIPO_ENTRADA WHERE nombre = ? LIMIT 1',
+        [tipo_entrada]
+        );
+        const cod_tipo_entrada = tipoEntradaResult[0]?.cod_tipo_entrada || null;
+
+        // Insertar en historial
+        await db.execute(
+        `INSERT INTO IR_HISTORIAL (problema, solucion, cod_tema, cod_tipo_entrada, cod_usuario, fecha)
+        VALUES (?, ?, ?, ?, ?, NOW())`,
+        [problema, solucion, cod_tema, cod_tipo_entrada, cod_usuario]
+        );
         res.json({ solucion });
-        } else {
-        res.status(500).json({ mensaje: "No se pudo generar la solución." });
-        }
     } catch (error) {
-        console.error("Error en /resolver:", error);
-        res.status(500).json({ mensaje: "Error interno del servidor." });
+        console.error('❌ Error al resolver:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 });
 

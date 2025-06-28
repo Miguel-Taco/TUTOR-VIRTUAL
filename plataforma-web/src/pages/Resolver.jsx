@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { resolverProblema } from "../services/api";
+import { useNavigate } from 'react-router-dom'; 
 
 function Resolver() {
     const [problema, setProblema] = useState("");
     const [tema, setTema] = useState("Álgebra");
     const [mensajes, setMensajes] = useState([]);
     const chatRef = useRef(null);
+    const navigate = useNavigate(); 
 
     const handleResolver = async () => {
         if (!problema.trim()) return;
@@ -35,14 +37,14 @@ function Resolver() {
         <div style={styles.page}>
         <header style={styles.header}>
             <h2 style={{ margin: 0 }}>Tutor Virtual 🤖</h2>
-            <button style={styles.logoutButton}>Cerrar sesión</button>
+            <button onClick={() => navigate("/")} style={styles.logoutButton}>Cerrar sesión</button>
         </header>
 
         <div style={styles.container}>
             <div style={styles.mainBox}>
             <div style={styles.inputBox}>
                 <div style={styles.topButtons}>
-                <button style={styles.historialButton}>Historial de chats</button>
+                <button onClick={() => navigate("/historial")} style={styles.historialButton}>Historial de chats</button>
                 </div>
                 <div>
                 <button style={styles.tabActive}>Texto</button>
@@ -64,6 +66,7 @@ function Resolver() {
                     <option value="Álgebra">Álgebra</option>
                     <option value="Cálculo">Cálculo</option>
                     <option value="Geometría">Geometría</option>
+                    <option value="Trigonometría">Trigonometría</option>
                 </select>
                 </div>
                 <button onClick={handleResolver} style={styles.button}>
