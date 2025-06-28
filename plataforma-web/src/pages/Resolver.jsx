@@ -14,18 +14,18 @@ function Resolver() {
 
         const entradaUsuario = { autor: "usuario", texto: problema };
         const respuestaBot = {
-        autor: "bot",
-        texto: "Procesando...",
+            autor: "bot",
+            texto: "Procesando...",
         };
         setMensajes((prev) => [...prev, entradaUsuario, respuestaBot]);
 
         const res = await resolverProblema(problema, tema);
         setMensajes((prev) => [
-        ...prev.slice(0, -1),
-        {
-            autor: "bot",
-            texto: res?.solucion || "No se pudo obtener solución.",
-        },
+            ...prev.slice(0, -1),
+            {
+                autor: "bot",
+                texto: res?.solucion || "No se pudo obtener solución.",
+            },
         ]);
     };
 
@@ -35,70 +35,88 @@ function Resolver() {
 
     return (
         <div style={styles.page}>
-        <header style={styles.header}>
-            <h2 style={{ margin: 0 }}>Tutor Virtual 🤖</h2>
-            <button onClick={() => navigate("/")} style={styles.logoutButton}>Cerrar sesión</button>
-        </header>
-
-        <div style={styles.container}>
-            <div style={styles.mainBox}>
-            <div style={styles.inputBox}>
-                <div style={styles.topButtons}>
-                <button onClick={() => navigate("/historial")} style={styles.historialButton}>Historial de chats</button>
-                </div>
-                <div>
-                <button style={styles.tabActive}>Texto</button>
-                <button style={styles.tabDisabled}>Imagen</button>
-                </div>
-                <textarea
-                placeholder="Ej: x² - 5x + 6 = 0"
-                value={problema}
-                onChange={(e) => setProblema(e.target.value)}
-                style={styles.textarea}
-                />
-                <div>
-                <label>Selecciona el tema</label>
-                <select
-                    value={tema}
-                    onChange={(e) => setTema(e.target.value)}
-                    style={styles.select}
-                >
-                    <option value="Álgebra">Álgebra</option>
-                    <option value="Cálculo">Cálculo</option>
-                    <option value="Geometría">Geometría</option>
-                    <option value="Trigonometría">Trigonometría</option>
-                </select>
-                </div>
-                <button onClick={handleResolver} style={styles.button}>
-                Resolver problema
-                </button>
-            </div>
-
-            <div style={styles.outputBox} ref={chatRef}>
-                {mensajes.length === 0 ? (
-                <div>
-                    <p><strong>Aún no hay solución</strong></p>
-                    <p>Escribe o sube una imagen de tu problema matemático y haz clic en "Resolver problema".</p>
-                </div>
-                ) : (
-                mensajes.map((msg, i) => (
-                    <div
-                    key={i}
-                    style={{
-                        ...styles.mensaje,
-                        ...(msg.autor === "usuario"
-                        ? styles.usuario
-                        : styles.bot),
-                    }}
+            <header style={styles.header}>
+                <div style={styles.leftHeader}>
+                    <h2
+                        onClick={() => navigate("/home")}
+                        style={{ cursor: "pointer", margin: 0 }}
                     >
-                    {msg.autor === "bot" && <span style={styles.iconoBot}>🤖</span>}
-                    <span style={{ whiteSpace: "pre-line" }}>{msg.texto}</span>
+                        MathSolver
+                    </h2>
+                </div>
+                
+                <div style={styles.rightHeader}>
+                    <button onClick={() => navigate("/")} style={styles.logoutButton}>
+                        Cerrar sesión
+                    </button>
+                </div>
+            </header>
+
+            <div style={styles.container}>
+                <div style={styles.tutorTitle}>
+                        <span style={{ margin: 0 }}>Tutor Virtual 🤖</span>
+                </div>
+                <div style={styles.mainBox}>
+                    
+                    <div style={styles.inputBox}>
+                        <div style={styles.topButtons}>
+                            <button onClick={() => navigate("/historial")} style={styles.historialButton}>
+                                Historial de chats
+                            </button>
+                        </div>
+                        <div>
+                            <button style={styles.tabActive}>Texto</button>
+                            <button style={styles.tabDisabled}>Imagen</button>
+                        </div>
+                        <textarea
+                            placeholder="Ej: x² - 5x + 6 = 0"
+                            value={problema}
+                            onChange={(e) => setProblema(e.target.value)}
+                            style={styles.textarea}
+                        />
+                        <div>
+                            <label>Selecciona el tema</label>
+                            <select
+                                value={tema}
+                                onChange={(e) => setTema(e.target.value)}
+                                style={styles.select}
+                            >
+                                <option value="Álgebra">Álgebra</option>
+                                <option value="Cálculo">Cálculo</option>
+                                <option value="Geometría">Geometría</option>
+                                <option value="Trigonometría">Trigonometría</option>
+                            </select>
+                        </div>
+                        <button onClick={handleResolver} style={styles.button}>
+                            Resolver problema
+                        </button>
                     </div>
-                ))
-                )}
+
+                    <div style={styles.outputBox} ref={chatRef}>
+                        {mensajes.length === 0 ? (
+                            <div>
+                                <p><strong>Aún no hay solución</strong></p>
+                                <p>Escribe o sube una imagen de tu problema matemático y haz clic en "Resolver problema".</p>
+                            </div>
+                        ) : (
+                            mensajes.map((msg, i) => (
+                                <div
+                                    key={i}
+                                    style={{
+                                        ...styles.mensaje,
+                                        ...(msg.autor === "usuario"
+                                            ? styles.usuario
+                                            : styles.bot),
+                                    }}
+                                >
+                                    {msg.autor === "bot" && <span style={styles.iconoBot}>🤖</span>}
+                                    <span style={{ whiteSpace: "pre-line" }}>{msg.texto}</span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
         </div>
     );
 }
@@ -114,6 +132,26 @@ const styles = {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+    },
+    leftHeader: {
+        flex: 1,
+        fontSize: "1.3rem",
+        fontWeight: "bold",
+    },
+    tutorTitle: {
+        marginBottom: "1rem",
+        fontWeight: "bold",
+        fontSize: "1.6rem",
+        color: "#2d2d8f",
+        textAlign: "left",
+        maxWidth: "800px",          
+        marginLeft: "auto",
+        marginRight: "auto",
+    },
+    rightHeader: {
+        flex: 1,
+        display: "flex",
+        justifyContent: "flex-end",
     },
     logoutButton: {
         background: "#fff",
