@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { obtenerHistorial } from "../services/historialService";
+import { useNavigate } from "react-router-dom";
 
 function Historial() {
     const [historial, setHistorial] = useState([]);
     const [selected, setSelected] = useState(null);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const cod_usuario = localStorage.getItem('usuarioId');
@@ -19,7 +21,6 @@ function Historial() {
             });
     }, []);
 
-
     function tipoIngresoTexto(tipo) {
         if (tipo === "Texto") return "📝 Texto";
         if (tipo === "Imagen") return "🖼️ Imagen";
@@ -27,25 +28,41 @@ function Historial() {
     }
 
     function temaBadgeStyle(tema) {
-    switch (tema) {
-        case "Cálculo":
-            return { background: "#ede9fe", color: "#7c3aed" };
-        case "Álgebra":
-            return { background: "#dbeafe", color: "#2563eb" };
-        case "Geometría":
-            return { background: "#d1fae5", color: "#059669" };
-        default:
-            return { background: "#e5e7eb", color: "#333" };
+        switch (tema) {
+            case "Cálculo":
+                return { background: "#ede9fe", color: "#7c3aed" };
+            case "Álgebra":
+                return { background: "#dbeafe", color: "#2563eb" };
+            case "Geometría":
+                return { background: "#d1fae5", color: "#059669" };
+            default:
+                return { background: "#e5e7eb", color: "#333" };
+        }
     }
-}
 
     return (
         <div style={styles.page}>
             <header style={styles.header}>
-                <h2 style={{ margin: 0 }}>Historial de Conversaciones 🤖</h2>
-                <button style={styles.logoutButton}>Cerrar sesión</button>
+                <span
+                    style={styles.logo}
+                    onClick={() => navigate("/Home")}
+                >
+                    Mathsolver
+                </span>
+                <button
+                    style={styles.logoutButton}
+                    onClick={() => {
+                        localStorage.removeItem("usuarioId");
+                        navigate("/");
+                    }}
+                >
+                    Cerrar sesión
+                </button>
             </header>
             <div style={styles.container}>
+                <div style={styles.historialTitle}>
+                        Historial de consultas <span role="img" aria-label="robot">🤖</span>
+                    </div>      
                 <div style={styles.mainBox}>
                     <div style={styles.inputBox}>
                         <h3 style={{ marginTop: 0, textAlign: "left", width: "100%" }}>Mis Consultas</h3>
@@ -125,6 +142,23 @@ const styles = {
         justifyContent: "space-between",
         alignItems: "center",
     },
+    logo: {
+        fontWeight: "bold",
+        fontSize: "1.5rem",
+        color: "#fff",
+        cursor: "pointer",
+        userSelect: "none",
+    },
+    historialTitle: {
+        marginBottom: "1rem",
+        fontWeight: "bold",
+        fontSize: "1.6rem",
+        color: "#2d2d8f",
+        textAlign: "left",
+        maxWidth: "860px",          
+        marginLeft: "auto",
+        marginRight: "auto",
+    },
     logoutButton: {
         background: "#fff",
         color: "#2d2d8f",
@@ -142,7 +176,10 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         gap: "2rem",
-        marginTop: "2rem",
+        marginTop: "0",
+        maxWidth: "860px",  
+        marginLeft: "auto",
+        marginRight: "auto",
     },
     inputBox: {
         display: "flex",
