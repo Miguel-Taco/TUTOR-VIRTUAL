@@ -1,31 +1,42 @@
 import React, { useState, useRef, useEffect } from "react";
-import { resolverProblema } from "../services/api";
-import { useNavigate } from 'react-router-dom'; 
+import { resolverProblema, interpretarImagen } from "../services/api";
+import { useNavigate } from 'react-router-dom';
 
 function Resolver() {
     const [problema, setProblema] = useState("");
     const [tema, setTema] = useState("Álgebra");
     const [mensajes, setMensajes] = useState([]);
+    const [modo, setModo] = useState("texto");
+    const [imagen, setImagen] = useState(null);
     const chatRef = useRef(null);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const handleResolver = async () => {
-        if (!problema.trim()) return;
+        if (modo === "texto" && !problema.trim()) return;
 
         const entradaUsuario = { autor: "usuario", texto: problema };
-        const respuestaBot = {
-        autor: "bot",
-        texto: "Procesando...",
-        };
-        setMensajes((prev) => [...prev, entradaUsuario, respuestaBot]);
+        const respuestaBot = { autor: "bot", texto: "Procesando..." };
+        setMensajes(prev => [...prev, entradaUsuario, respuestaBot]);
 
         const res = await resolverProblema(problema, tema);
-        setMensajes((prev) => [
+        setMensajes(prev => [
         ...prev.slice(0, -1),
-        {
-            autor: "bot",
-            texto: res?.solucion || "No se pudo obtener solución.",
-        },
+        { autor: "bot", texto: res?.solucion || "No se pudo obtener solución." }
+        ]);
+    };
+
+    const handleImagen = async () => {
+        if (!imagen) return;
+        const respuestaBot = { autor: "bot", texto: "Procesando imagen..." };
+        setMensajes(prev => [...prev, respuestaBot]);
+
+        const res = await interpretarImagen(imagen, tema);
+        const texto = res?.texto || "No se pudo interpretar la imagen";
+
+        setMensajes(prev => [
+        ...prev.slice(0, -1),
+        { autor: "usuario", texto },
+        { autor: "bot", texto: res?.solucion || "No se pudo obtener solución." }
         ]);
     };
 
@@ -36,6 +47,7 @@ function Resolver() {
     return (
         <div style={styles.page}>
         <header style={styles.header}>
+            <div style={styles.headerLeft} onClick={() => navigate("/home")}>MathSolver</div>
             <h2 style={{ margin: 0 }}>Tutor Virtual 🤖</h2>
             <button onClick={() => navigate("/")} style={styles.logoutButton}>Cerrar sesión</button>
         </header>
@@ -47,63 +59,76 @@ function Resolver() {
                 <button onClick={() => navigate("/historial")} style={styles.historialButton}>Historial de chats</button>
                 </div>
                 <div>
-                <button style={styles.tabActive}>Texto</button>
-                <button style={styles.tabDisabled}>Imagen</button>
+                <button style={modo === "texto" ? styles.tabActive : styles.tabDisabled} onClick={() => setModo("texto")}>Texto</button>
+                <button style={modo === "imagen" ? styles.tabActive : styles.tabDisabled} onClick={() => setModo("imagen")}>Imagen</button>
                 </div>
-                <textarea
-                placeholder="Ej: x² - 5x + 6 = 0"
-                value={problema}
-                onChange={(e) => setProblema(e.target.value)}
-                style={styles.textarea}
-                />
-                <div>
-                <label>Selecciona el tema</label>
-                <select
-                    value={tema}
-                    onChange={(e) => setTema(e.target.value)}
-                    style={styles.select}
-                >
-                    <option value="Álgebra">Álgebra</option>
-                    <option value="Cálculo">Cálculo</option>
-                    <option value="Geometría">Geometría</option>
-                    <option value="Trigonometría">Trigonometría</option>
-                </select>
-                </div>
-                <button onClick={handleResolver} style={styles.button}>
-                Resolver problema
-                </button>
+
+                {modo === "texto" ? (
+                <>
+                    <textarea
+                    placeholder="Ej: x² - 5x + 6 = 0"
+                    value={problema}
+                    onChange={(e) => setProblema(e.target.value)}
+                    style={styles.textarea}
+                    />
+                    <label>Selecciona el tema</label>
+                    <select value={tema} onChange={(e) => setTema(e.target.value)} style={styles.select}>
+                    <option>Álgebra</option>
+                    <option>Cálculo</option>
+                    <option>Geometría</option>
+                    <option>Trigonometría</option>
+                    </select>
+                    <button onClick={handleResolver} style={styles.button}>Resolver problema</button>
+                </>
+                ) : (
+                <>
+                    <div style={styles.uploadBox}>
+                    <input type="file" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} />
+                    </div>
+                    <label>Selecciona el tema</label>
+                    <select value={tema} onChange={(e) => setTema(e.target.value)} style={styles.select}>
+                    <option>Álgebra</option>
+                    <option>Cálculo</option>
+                    <option>Geometría</option>
+                    <option>Trigonometría</option>
+                    </select>
+                    <button onClick={handleImagen} style={styles.button}>Analizar Imagen</button>
+                </>
+                )}
             </div>
 
             <div style={styles.outputBox} ref={chatRef}>
-                {mensajes.length === 0 ? (
-                <div>
-                    <p><strong>Aún no hay solución</strong></p>
-                    <p>Escribe o sube una imagen de tu problema matemático y haz clic en "Resolver problema".</p>
-                </div>
-                ) : (
-                mensajes.map((msg, i) => (
-                    <div
+                {mensajes.map((msg, i) => (
+                <div
                     key={i}
                     style={{
-                        ...styles.mensaje,
-                        ...(msg.autor === "usuario"
-                        ? styles.usuario
-                        : styles.bot),
+                    ...styles.mensaje,
+                    ...(msg.autor === "usuario" ? styles.usuario : styles.bot),
                     }}
-                    >
+                >
                     {msg.autor === "bot" && <span style={styles.iconoBot}>🤖</span>}
                     <span style={{ whiteSpace: "pre-line" }}>{msg.texto}</span>
-                    </div>
-                ))
-                )}
+                </div>
+                ))}
             </div>
             </div>
         </div>
         </div>
     );
 }
-
 const styles = {
+    uploadBox: {
+    padding: "1rem",
+    border: "2px dashed #ccc",
+    borderRadius: "8px",
+    textAlign: "center",
+    width: "100%",
+    },
+    headerLeft: {
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "1.3rem",
+    },
     page: {
         fontFamily: "sans-serif",
     },
@@ -114,6 +139,26 @@ const styles = {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+    },
+    leftHeader: {
+        flex: 1,
+        fontSize: "1.3rem",
+        fontWeight: "bold",
+    },
+    tutorTitle: {
+        marginBottom: "1rem",
+        fontWeight: "bold",
+        fontSize: "1.6rem",
+        color: "#2d2d8f",
+        textAlign: "left",
+        maxWidth: "800px",          
+        marginLeft: "auto",
+        marginRight: "auto",
+    },
+    rightHeader: {
+        flex: 1,
+        display: "flex",
+        justifyContent: "flex-end",
     },
     logoutButton: {
         background: "#fff",
