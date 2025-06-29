@@ -33,4 +33,15 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.delete('/:cod_historial', async (req, res) => {
+  try {
+    const { cod_historial } = req.params;
+    await db.query('DELETE FROM IR_HISTORIAL WHERE cod_historial = ?', [cod_historial]);
+    res.json({ mensaje: 'Consulta eliminada correctamente' });
+  } catch (err) {
+    console.error("Error al eliminar:", err);
+    res.status(500).json({ error: 'Error al eliminar la consulta' });
+  }
+});
+
 module.exports = router;

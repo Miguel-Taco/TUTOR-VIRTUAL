@@ -12,3 +12,12 @@ export const obtenerHistorial = async (cod_usuario) => {
         throw error.response?.data?.error || 'Error al obtener historial';
     }
 };
+
+export const eliminarHistorialAPI = async (cod_historial) => {
+    try {
+        const response = await axios.delete(`${API_URL}/historial/${cod_historial}`);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data?.error || 'Error al eliminar consulta';
+    }
+};
