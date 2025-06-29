@@ -1,49 +1,61 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { obtenerSolucionPasoAPaso } = require("./mathService");
+const db = require("../db/db");
 require("dotenv").config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, {
+    apiVersion: "v1",
+    });
 
-async function interpretarImagen(imagen, tema) {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    async function interpretarImagen(imagen, tema, cod_usuario) {
+    const model = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash-latest",
+    });
 
-    // Paso 1: Interpretar imagen
+    // 1. Extraer problema en texto desde imagen
     const result = await model.generateContent({
-        contents: [
+        contents: [{
+        parts: [
             {
-                role: "user",
-                parts: [
-                    {
-                        text: `Extrae y reescribe el siguiente problema de ${tema} que aparece en la imagen. Solo responde con el texto del problema en limpio.`
-                    },
-                    {
-                        inlineData: {
-                            mimeType: imagen.mimetype,
-                            data: imagen.buffer.toString("base64")
-                        }
-                    }
-                ]
+            text: `Extrae y reescribe el siguiente problema de ${tema} que aparece en la imagen. 
+    Solo responde con el texto del problema en limpio, sin explicación, ni encabezados ni usando código Latex.`
+            },
+            {
+            inlineData: {
+                mimeType: imagen.mimetype,
+                data: imagen.buffer.toString("base64")
+            }
             }
         ]
+        }]
     });
 
-    const textoExtraido = result.response.text();
-    console.log("📥 Texto extraído de imagen:", textoExtraido);
+    const textoExtraido = await result.response.text();
+    console.log("📥 Texto extraído:", textoExtraido);
 
-    // Paso 2: Resolver texto extraído
-    const resolver = await model.generateContent({
-        contents: [
-            {
-                role: "user",
-                parts: [
-                    {
-                        text: `Resuelve paso a paso el siguiente problema de ${tema}:\n\n"${textoExtraido}"`
-                    }
-                ]
-            }
-        ]
-    });
+    // 2. Resolver el problema usando función ya existente
+    const solucion = await obtenerSolucionPasoAPaso(textoExtraido, tema);
 
-    const solucion = resolver.response.text();
+    // 3. Obtener IDs de tema y tipo_entrada
+    const [temaResult] = await db.execute(
+        'SELECT cod_tema FROM IR_TEMA WHERE nombre = ? LIMIT 1',
+        [tema]
+    );
+    const cod_tema = temaResult[0]?.cod_tema || null;
+
+    const [tipoEntradaResult] = await db.execute(
+        'SELECT cod_tipo_entrada FROM IR_TIPO_ENTRADA WHERE nombre = ? LIMIT 1',
+        ['Imagen']
+    );
+    const cod_tipo_entrada = tipoEntradaResult[0]?.cod_tipo_entrada || null;
+
+    // 4. Insertar en historial
+    await db.execute(
+        `INSERT INTO IR_HISTORIAL (problema, solucion, cod_tema, cod_tipo_entrada, cod_usuario, fecha)
+        VALUES (?, ?, ?, ?, ?, NOW())`,
+        [textoExtraido, solucion, cod_tema, cod_tipo_entrada, cod_usuario]
+    );
+
     return { texto: textoExtraido, solucion };
 }
 

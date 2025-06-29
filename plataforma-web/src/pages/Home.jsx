@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { obtenerEstadisticas } from "../services/statsService";
 import { obtenerEstadisticasGlobales } from "../services/statsGlobalService";
 import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { obtenerUsuarioPorId } from "../services/usuarioService";
 
 const COLORS = ["#6b21a8", "#a855f7", "#c084fc", "#22c55e", "#f97316"];
 
@@ -12,6 +13,7 @@ function Home() {
   const [estadisticasGlobales, setEstadisticasGlobales] = useState(null);
   const [mostrarGlobales, setMostrarGlobales] = useState(false);
   const [error, setError] = useState(null);
+  const [nombreUsuario, setNombreUsuario] = useState(localStorage.getItem("nombreUsuario") || "...");
 
   useEffect(() => {
     const cod_usuario = localStorage.getItem("usuarioId");
@@ -19,6 +21,16 @@ function Home() {
       setError("Usuario no autenticado");
       return;
     }
+    
+    // Obtener nombre del usuario
+    obtenerUsuarioPorId(cod_usuario)
+      .then((data) => {
+        setNombreUsuario(data.nombre);
+      })
+      .catch((err) => {
+        console.error(err);
+        setNombreUsuario('');
+      });
 
     obtenerEstadisticas(cod_usuario)
       .then((data) => {
@@ -58,6 +70,9 @@ function Home() {
     <div style={styles.page}>
       <header style={styles.header}>
         <h2 style={styles.logo}>MathSolver</h2>
+        <div style={styles.centerText}>
+          {nombreUsuario && <span style={styles.welcome}>Bienvenido, {nombreUsuario}</span>}
+        </div>
         <div style={styles.navRight}>
           <button
             style={styles.logout}
@@ -319,10 +334,19 @@ const styles = {
     fontWeight: "bold",
     marginBottom: "0.5rem",
   },
+  centerText: {
+  flex: 1,
+  textAlign: "center",
+  },
   statCard: {
     backgroundColor: "#f3e8ff",
     padding: "1rem",
     borderRadius: "8px",
+  },
+  welcome: {
+  fontSize: "2rem",
+  fontWeight: "600",
+  color: "#4c1d95",
   },
   error: {
     color: "#b91c1c",

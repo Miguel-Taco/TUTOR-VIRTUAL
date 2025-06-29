@@ -13,3 +13,8 @@ export const login = async (correo, contrasena) => {
     throw error.response?.data?.mensaje || 'Error al iniciar sesión';
   }
 };
+
+export const registrar = async (nombre, correo, contrasena) => {
+  const response = await axios.post(`${API_URL}/register`, { nombre, correo, contrasena });
+  return response.data;
+};
