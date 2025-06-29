@@ -1,26 +1,46 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import { login } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
+import { login, registrar } from '../services/authService';
 
 const Login = () => {
+  const [modo, setModo] = useState('login'); // 'login' o 'registro'
+  const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const manejarSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const respuesta = await login(correo, contrasena);
-      console.log('✅', respuesta);
-
-      localStorage.setItem('usuarioId', respuesta.usuario.cod_usuario);// Guarda el cod_usuario
-      
-      setMensaje('Inicio de sesión exitoso');
-      navigate('/home'); // Redirige a home después del login
-    } catch (error) {
-      console.error('❌', error);
-      setMensaje(error);
+    if (modo === 'login') {
+      try {
+        const respuesta = await login(correo, contrasena);
+        console.log('✅', respuesta);
+        localStorage.setItem('usuarioId', respuesta.usuario.cod_usuario);
+        localStorage.setItem("nombreUsuario", respuesta.usuario.nombre);
+        setMensaje('Inicio de sesión exitoso');
+        navigate('/home');
+      } catch (error) {
+        console.error('❌', error);
+        setMensaje(error);
+      }
+    } else {
+      // Registro
+      if (!nombre.trim()) {
+        setMensaje('Por favor ingresa un nombre.');
+        return;
+      }
+      try {
+        await registrar(nombre, correo, contrasena);
+        setMensaje('Registro exitoso. Ahora puedes iniciar sesión.');
+        setModo('login');
+        setNombre('');
+        setCorreo('');
+        setContrasena('');
+      } catch (error) {
+        console.error('❌', error);
+        setMensaje(error);
+      }
     }
   };
 
@@ -29,15 +49,43 @@ const Login = () => {
       <div style={estilos.contenedor}>
         <h2 style={estilos.titulo}>Bienvenido</h2>
         <p style={estilos.subtitulo}>
-          Accede y obten ayuda del tutor virtual :)
+          {modo === 'login'
+            ? 'Accede y obtén ayuda del tutor virtual :)'
+            : 'Regístrate para comenzar a usar MathSolver'}
         </p>
 
         <div style={estilos.tabs}>
-          <button style={{ ...estilos.tab, ...estilos.activo }}>Iniciar Sesión</button>
-          <button style={estilos.tab}>Registrarse</button>
+          <button
+            style={{ ...estilos.tab, ...(modo === 'login' ? estilos.activo : {}) }}
+            onClick={() => {
+              setModo('login');
+              setMensaje('');
+            }}
+          >
+            Iniciar Sesión
+          </button>
+          <button
+            style={{ ...estilos.tab, ...(modo === 'registro' ? estilos.activo : {}) }}
+            onClick={() => {
+              setModo('registro');
+              setMensaje('');
+            }}
+          >
+            Registrarse
+          </button>
         </div>
 
         <form onSubmit={manejarSubmit} style={estilos.formulario}>
+          {modo === 'registro' && (
+            <input
+              type="text"
+              placeholder="Nombre de usuario"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+              style={estilos.input}
+            />
+          )}
           <input
             type="email"
             placeholder="Correo electrónico"
@@ -55,7 +103,7 @@ const Login = () => {
             style={estilos.input}
           />
           <button type="submit" style={estilos.boton}>
-            Iniciar Sesión
+            {modo === 'login' ? 'Iniciar Sesión' : 'Registrarse'}
           </button>
         </form>
 
