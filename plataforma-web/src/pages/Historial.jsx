@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { obtenerHistorial } from "../services/historialService";
+import { obtenerHistorial, eliminarHistorialAPI } from "../services/historialService";
 import { useNavigate } from "react-router-dom";
 
 function Historial() {
     const [historial, setHistorial] = useState([]);
     const [selected, setSelected] = useState(null);
     const [error, setError] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [historialAEliminar, setHistorialAEliminar] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,6 +23,16 @@ function Historial() {
             });
     }, []);
 
+    const eliminarHistorial = async (cod_historial) => {
+        try {
+            await eliminarHistorialAPI(cod_historial);
+            setHistorial(historial.filter(item => item.cod_historial !== cod_historial));
+            if (selected && selected.cod_historial === cod_historial) setSelected(null);
+        } catch (error) {
+            alert("Error al eliminar la consulta.");
+        }
+    };
+
     function tipoIngresoTexto(tipo) {
         if (tipo === "Texto") return "📝 Texto";
         if (tipo === "Imagen") return "🖼️ Imagen";
@@ -35,6 +47,8 @@ function Historial() {
                 return { background: "#dbeafe", color: "#2563eb" };
             case "Geometría":
                 return { background: "#d1fae5", color: "#059669" };
+            case "Trigonometría":
+                return { background: "#fef9c3", color: "#b45309" };
             default:
                 return { background: "#e5e7eb", color: "#333" };
         }
@@ -47,7 +61,7 @@ function Historial() {
                     style={styles.logo}
                     onClick={() => navigate("/Home")}
                 >
-                    Mathsolver
+                    MathSolver
                 </span>
                 <button
                     style={styles.logoutButton}
@@ -61,8 +75,8 @@ function Historial() {
             </header>
             <div style={styles.container}>
                 <div style={styles.historialTitle}>
-                        Historial de consultas <span role="img" aria-label="robot">🤖</span>
-                    </div>      
+                    Historial de consultas 
+                </div>
                 <div style={styles.mainBox}>
                     <div style={styles.inputBox}>
                         <h3 style={{ marginTop: 0, textAlign: "left", width: "100%" }}>Mis Consultas</h3>
@@ -76,9 +90,38 @@ function Historial() {
                                         style={{
                                             ...styles.chatItem,
                                             background: selected && selected.cod_historial === item.cod_historial ? "#e0e0e0" : "transparent",
+                                            position: "relative"
                                         }}
                                         onClick={() => setSelected(item)}
                                     >
+                                        <button
+                                            style={{
+                                                position: "absolute",
+                                                top: 8,
+                                                right: 8,
+                                                background: "white",
+                                                border: "1px solid #bbb",
+                                                borderRadius: "8px",
+                                                cursor: "pointer",
+                                                fontSize: "1.1rem",
+                                                color: "#888",
+                                                zIndex: 2,
+                                                width: "2rem",
+                                                height: "2rem",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                transition: "background 0.2s, border 0.2s"
+                                            }}
+                                            title="Eliminar consulta"
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                setHistorialAEliminar(item.cod_historial);
+                                                setShowModal(true);
+                                            }}
+                                        >
+                                            🗑️
+                                        </button>
                                         <div style={styles.problemaTitulo}>
                                             {item.problema}
                                         </div>
@@ -126,9 +169,69 @@ function Historial() {
                     </div>
                 </div>
             </div>
+            {showModal && (
+                <div style={modalStyles.overlay}>
+                    <div style={modalStyles.modal}>
+                        <p>¿Estás seguro de que deseas eliminar esta consulta?</p>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+                            <button
+                                style={modalStyles.cancel}
+                                onClick={() => setShowModal(false)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                style={modalStyles.confirm}
+                                onClick={() => {
+                                    eliminarHistorial(historialAEliminar);
+                                    setShowModal(false);
+                                }}
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+const modalStyles = {
+    overlay: {
+        position: "fixed",
+        top: 0, left: 0, right: 0, bottom: 0,
+        background: "rgba(0,0,0,0.3)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999
+    },
+    modal: {
+        background: "#fff",
+        borderRadius: "12px",
+        padding: "2rem",
+        minWidth: "300px",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+        textAlign: "center"
+    },
+    cancel: {
+        background: "#e0e0e0",
+        color: "#333",
+        border: "none",
+        borderRadius: "8px",
+        padding: "0.5rem 1.2rem",
+        cursor: "pointer"
+    },
+    confirm: {
+        background: "#b91c1c",
+        color: "#fff",
+        border: "none",
+        borderRadius: "8px",
+        padding: "0.5rem 1.2rem",
+        cursor: "pointer"
+    }
+};
 
 const styles = {
     page: {
