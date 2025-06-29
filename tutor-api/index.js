@@ -19,6 +19,10 @@ app.use('/api/historial', historialRouter);
 const statsRoutes = require('./routes/stats');
 app.use('/api/stats', statsRoutes);
 
+const interpretarImagenRoute = require('./routes/interpretarImagen');
+app.use('/api/interpretar-imagen', interpretarImagenRoute);
+
+
 // Iniciar servidor
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
