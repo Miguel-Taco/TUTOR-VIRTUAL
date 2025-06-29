@@ -59,10 +59,27 @@ function Resolver() {
                 <button onClick={() => navigate("/historial")} style={styles.historialButton}>Historial de chats</button>
                 </div>
                 <div>
-                <button style={modo === "texto" ? styles.tabActive : styles.tabDisabled} onClick={() => setModo("texto")}>Texto</button>
-                <button style={modo === "imagen" ? styles.tabActive : styles.tabDisabled} onClick={() => setModo("imagen")}>Imagen</button>
+                    <div style={{ display: "flex", marginBottom: "1rem" }}>
+                        <button
+                            onClick={() => setModo("texto")}
+                            style={{
+                                ...styles.tabButton,
+                                ...(modo === "texto" ? styles.tabActive : styles.tabInactive),
+                            }}
+                        >
+                            Texto
+                        </button>
+                        <button
+                            onClick={() => setModo("imagen")}
+                            style={{
+                                ...styles.tabButton,
+                                ...(modo === "imagen" ? styles.tabActive : styles.tabInactive),
+                            }}
+                        >
+                            Imagen
+                        </button>
+                    </div>
                 </div>
-
                 {modo === "texto" ? (
                 <>
                     <textarea
@@ -82,9 +99,16 @@ function Resolver() {
                 </>
                 ) : (
                 <>
-                    <div style={styles.uploadBox}>
-                    <input type="file" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} />
-                    </div>
+                    <label htmlFor="imagenUpload" style={styles.customUpload}>
+                        {imagen ? `📷 ${imagen.name}` : "📁 Haz clic para seleccionar un archivo"}
+                        <input
+                            id="imagenUpload"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setImagen(e.target.files[0])}
+                            style={{ display: "none" }}
+                        />
+                    </label>
                     <label>Selecciona el tema</label>
                     <select value={tema} onChange={(e) => setTema(e.target.value)} style={styles.select}>
                     <option>Álgebra</option>
@@ -92,7 +116,7 @@ function Resolver() {
                     <option>Geometría</option>
                     <option>Trigonometría</option>
                     </select>
-                    <button onClick={handleImagen} style={styles.button}>Analizar Imagen</button>
+                    <button onClick={handleImagen} style={styles.button}>Resolver problema</button>
                 </>
                 )}
             </div>
@@ -117,12 +141,18 @@ function Resolver() {
     );
 }
 const styles = {
-    uploadBox: {
-    padding: "1rem",
-    border: "2px dashed #ccc",
-    borderRadius: "8px",
-    textAlign: "center",
-    width: "100%",
+    customUpload: {
+        padding: "1rem",
+        border: "2px dashed #ccc",
+        borderRadius: "8px",
+        textAlign: "center",
+        width: "85%",
+        height: "82px",
+        cursor: "pointer",
+        backgroundColor: "#fdfdfd",
+        color: "#555",
+        fontWeight: "500",
+        transition: "background-color 0.3s",
     },
     headerLeft: {
         cursor: "pointer",
@@ -215,20 +245,22 @@ const styles = {
         gap: "1rem",
         backgroundColor: "#f9f9f9",
     },
-    tabActive: {
-        padding: "0.5rem",
-        backgroundColor: "#eee",
+    tabButton: {
+        padding: "0.5rem 1rem",
         border: "none",
-        fontWeight: "bold",
         cursor: "pointer",
+        fontWeight: "bold",
+        borderRadius: "5px 5px 0 0",
+        marginRight: "5px",
+        transition: "0.3s",
     },
-    tabDisabled: {
-        padding: "0.5rem",
-        backgroundColor: "#ddd",
-        border: "none",
-        color: "#888",
-        marginLeft: "0.5rem",
-        cursor: "not-allowed",
+    tabActive: {
+        backgroundColor: "#a78bfa",
+        color: "white",
+    },
+    tabInactive: {
+        backgroundColor: "#e0e0e0",
+        color: "#661",
     },
     textarea: {
         width: "95%",

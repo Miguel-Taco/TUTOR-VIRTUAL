@@ -4,9 +4,11 @@ const API_URL = 'http://localhost:3001/api';
 
 export const resolverProblema = async (problema, tema) => {
     try {
+        const cod_usuario = localStorage.getItem("usuarioId"); 
         const response = await axios.post(`${API_URL}/resolver`, {
-        problema,
-        tema,
+            problema,
+            tema,
+            cod_usuario: cod_usuario || null, 
         });
         return response.data;
     } catch (error) {
@@ -15,32 +17,23 @@ export const resolverProblema = async (problema, tema) => {
     }
 };
 
-export const interpretarImagen = async (file, tema) => {
+
+export const interpretarImagen = async (selectedFile, tema) => {
     try {
         const formData = new FormData();
-        formData.append("imagen", file);
+        formData.append("imagen", selectedFile);
         formData.append("tema", tema);
+        formData.append("cod_usuario", localStorage.getItem("usuarioId"));
 
-        const response = await axios.post(
-        `${API_URL}/interpretar-imagen`,
-        formData,
-        {
-            headers: {
-            "Content-Type": "multipart/form-data",
-            },
+        const response = await axios.post(`${API_URL}/interpretar-imagen`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
         }
-        );
+        });
 
         return response.data;
     } catch (error) {
-        if (error.response) {
-        console.error("❌ Error interpretando imagen (respuesta):", error.response.data);
-        } else if (error.request) {
-        console.error("❌ Error interpretando imagen (sin respuesta):", error.request);
-        } else {
-        console.error("❌ Error interpretando imagen (otro):", error.message);
-        }
+        console.error("❌ Error interpretando imagen:", error);
         return null;
     }
 };
-
