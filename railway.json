@@ -1,5 +1,8 @@
 {
   "build": {
     "root": "tutor-api"
+  },
+  "deploy": {
+    "startCommand": "npm run server"
   }
 }
