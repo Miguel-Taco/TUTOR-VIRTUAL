@@ -92,6 +92,9 @@ function Home() {
           Interpreta problemas matemáticos escritos o en imágenes y obtén soluciones detalladas en álgebra, cálculo, geometría y más.
         </p>
         <div style={styles.buttonsContainer}>
+          <button style={styles.secondaryButton} onClick={() => navigate("/temas")}>
+            Ver Temas
+          </button>
           <button style={styles.primaryButton} onClick={() => navigate("/historial")}>
             Historial de chats
           </button>
