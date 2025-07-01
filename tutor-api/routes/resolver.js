@@ -11,12 +11,9 @@ router.post('/resolver', async (req, res) => {
     try {
         const solucion = await obtenerSolucionPasoAPaso(problema, tema);
 
-        // Si la respuesta es de rechazo, NO guardar en historial
+        // Si la solución indica que no se puede procesar, NO guardes en la base de datos
         if (
-            solucion &&
-            solucion.trim().startsWith(
-                "Lo siento, solo puedo ayudarte con problemas matemáticos"
-            )
+            solucion.trim() === "Lo siento, solo puedo responder problemas matemáticos."
         ) {
             return res.json({ solucion });
         }
@@ -34,10 +31,10 @@ router.post('/resolver', async (req, res) => {
         );
         const cod_tipo_entrada = tipoEntradaResult[0]?.cod_tipo_entrada || null;
 
-        // Insertar en historial si la respuesta fue válida
+        // Insertar en historial SOLO si es válido
         await db.execute(
             `INSERT INTO IR_HISTORIAL (problema, solucion, cod_tema, cod_tipo_entrada, cod_usuario, fecha)
-             VALUES (?, ?, ?, ?, ?, NOW())`,
+            VALUES (?, ?, ?, ?, ?, NOW())`,
             [problema, solucion, cod_tema, cod_tipo_entrada, cod_usuario]
         );
 
