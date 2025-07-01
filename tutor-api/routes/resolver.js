@@ -13,7 +13,7 @@ router.post('/resolver', async (req, res) => {
 
         // Si la solución indica que no se puede procesar, NO guardes en la base de datos
         if (
-            solucion.trim() === "Lo siento, solo puedo responder problemas matemáticos."
+            solucion.trim().includes("Lo siento, solo puedo responder problemas matemáticos.")
         ) {
             return res.json({ solucion });
         }
